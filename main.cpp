@@ -49,6 +49,10 @@ class Person
     {
     }
 
+    ~Person()
+    {
+    }
+
   private:
     std::string _name;
     int _age;
@@ -67,36 +71,48 @@ class Student : public Person
     Student(std::initializer_list<std::string> list) : Person(*list.begin(), 0)
     {
     }
+
+    // 8. 继承构造
+    using Person::Person;
+
+    ~Student()
+    {
+        cout << "Student destructor called" << *this << endl;
+    }
 };
 
 int main()
 {
     auto p1 = Person{};
-    cout << p1 << endl;
+    cout << "p1: " << p1 << endl;
     auto p2 = Person{"username", 18};
-    cout << p2 << endl;
+    cout << "p2: " << p2 << endl;
     auto p3 = Person{p2};
-    cout << p3 << endl;
+    cout << "p3: " << p3 << endl;
     auto p4 = Person{std::move(p2)}; // 移动构造函数
     cout << "p4: " << p4 << "\t" << "p2: " << p2 << endl;
     auto p5 = Person{"username"};
-    cout << p5 << endl;
+    cout << "p5: " << p5 << endl;
     auto p6 = Person{18}; // 显式转换构造函数"
-    cout << p6 << endl;
+    cout << "p6: " << p6 << endl;
 
     auto p7 = Student{"student1", "student2", "student3"};
-    cout << p7 << endl;
+    cout << "p7: " << p7 << endl;
+
+    // 使用 new 关键字创建对象，创建在堆上
+    // 注意：使用 new 创建的对象需要手动释放内存
+
+    auto p8_1 = new Student{"new Student"};
+    cout << "p8: " << *p8_1 << endl;
+
+    {
+        auto p8_2 = Student{"new Student", 18};
+        cout << "p8: " << p8_2 << endl;
+    }
+
+    delete p8_1;
+    // 由于 p7 是在栈上创建的，所以在离开作用域时会自动调用析构函数
+    // 但是 p8_1 是在堆上创建的，所以需要手动调用析构函数
 
     return 0;
 }
-
-/* 
-name: momo, age: 0
-name: username, age: 18
-name: username, age: 18
-p4: name: username, age: 18     p2: name: , age: 0
-name: username, age: 0
-name: momo, age: 18
-name: student1, age: 0
- */
- 
